@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title><%= appName %></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<script>
+
+var dojoConfig = {
+	"isDebug": false, 
+	"async": true, 
+	"parseOnLoad": true, 
+	"mblHideAddressBar": false,
+	"packages" : [{"name": "commonapp", "location": "http://localhost:3434/commonapp"}]
+	
+};
+</script>
+
+<script src="http://localhost:3434/dojo/dojo.js"></script>
+
+
+<link rel="stylesheet" href="css/<%= appName %>.css">
+<link rel="stylesheet" href="http://localhost:3434/dojox/mobile/themes/iphone/iphone.css">
+</head>
+<body id="content" style="display: none;">
+	<script src="js/initOptions.js"></script>
+	<script src="js/<%= appName %>.js"></script>
+	<script src="js/messages.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+{
+	"name": "<%= envName %>app",
+	"dojoBuild": "app.profile.js"
+}

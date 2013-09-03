@@ -1,0 +1,47 @@
+{
+	"id": "app",
+	"name": "app",
+	"description": "Example dojox/app based Worklight app",
+	"dependencies": ["dojox/mobile/Heading",
+	"dojo/store/Memory",
+	"dojo/store/Observable",
+	"dojox/mvc/EditStoreRefListController",
+	"dojox/app/utils/mvcModel",
+	"dojo/store/DataStore",
+	"commonapp/utils/WorklightStore",
+	"commonapp/utils/hybridConsole"],
+	
+	"controllers": ["dojox/app/controllers/Load",
+	"dojox/app/controllers/Transition",
+	"dojox/app/controllers/Layout"],
+	
+	"stores": {
+		"userStore": {
+			"type": "commonapp/utils/WorklightStore",
+			"observable": true,
+			"params": {
+				"resourceName": "User",
+				"searchFields": {
+					"id": "string",
+					"name": "string"
+				},
+				"idProperty": "id"
+			}
+		}
+	},
+	"models": {
+		"userModelMVC": {
+			"modelLoader": "dojox/app/utils/mvcModel",
+			"type": "dojox/mvc/EditStoreRefListController",
+			"params": {
+				"store": {
+					"$ref": "#stores.userStore"
+				}
+			}
+		}
+	},
+	"defaultView" : "testView",
+	"defaultTransition": "slide",
+	"views": {
+		}
+}

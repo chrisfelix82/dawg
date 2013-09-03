@@ -1,0 +1,2 @@
+cd /Users/chris/Documents/dev/RQM_Adapter
+./start.sh -repository https://i4i27.torolab.ibm.com:9443/qm -user <username> -password <pass> -adapter mac_rqm_adapter -projectArea "Mobile Project (Quality Management)"

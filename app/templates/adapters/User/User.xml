@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed Materials - Property of IBM
+    5725-G92 (C) Copyright IBM Corp. 2011, 2013. All Rights Reserved.
+    US Government Users Restricted Rights - Use, duplication or
+    disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+-->
+<wl:adapter name="User"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:wl="http://www.worklight.com/integration"
+	xmlns:http="http://www.worklight.com/integration/http">
+
+	<displayName>User</displayName>
+	<description>User</description>
+	<connectivity>
+		<connectionPolicy xsi:type="http:HTTPConnectionPolicyType">
+			<protocol>http</protocol>
+			<domain>rss.cnn.com</domain>
+			<port>80</port>	
+			<!-- Following properties used by adapter's key manager for choosing specific certificate from key store  
+			<sslCertificateAlias></sslCertificateAlias> 
+			<sslCertificatePassword></sslCertificatePassword>
+			-->		
+		</connectionPolicy>
+		<loadConstraints maxConcurrentConnectionsPerNode="2" />
+	</connectivity>
+
+	<procedure name="get"/>
+	<procedure name="query"/>
+	<procedure name="add"/>
+	<procedure name="put"/>
+	<procedure name="remove"/>
+	
+</wl:adapter>

@@ -1,0 +1,19 @@
+<div class='mblView <%=viewName%><%=viewSuffix%>'>
+<script type="dojo/require">at: "dojox/mvc/at"</script>
+<h1>Sample MVC view</h1>
+
+<ul data-dojo-type="dojox/mobile/RoundRectList" data-dojo-mixins="dojox/mvc/Repeat" data-dojo-attach-point="dapRepeatMVC" data-dojo-props="exprchar: '#'">
+
+<li data-dojo-type="dojox/mobile/ListItem" data-dojo-props="label: at('rel:#{index}','name')"></li>
+
+</ul>
+
+<div data-dojo-type="dojox/mvc/Group" data-dojo-attach-point="dapGroupMVC">
+
+<input data-dojo-attach-point="dapNameMVC" data-dojo-type="dojox/mobile/TextBox" data-dojo-props="value: at('rel:','name')">
+<input data-dojo-type="dojox/mobile/Button" data-dojo-attach-point="dapAddUserMVC" data-dojo-props="value: 'Add user'"></input>
+<input data-dojo-type="dojox/mobile/Button" data-dojo-attach-point="dapCommitMVC" data-dojo-props="value: 'Commit'"></input>
+<input data-dojo-type="dojox/mobile/Button" data-dojo-attach-point="dapResetMVC" data-dojo-props="value: 'Reset'"></input>
+</div>
+
+</div>
