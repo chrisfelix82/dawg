@@ -8,8 +8,8 @@
   "homepage": "https://github.com/chrisfelix82/dawg",
   "bugs": "https://github.com/chrisfelix82/dawg/issues",
   "author": {
-    "name": "",
-    "email": "",
+    "name": "Chris Felix",
+    "email": "chrisfelix82@gmail.com",
     "url": "https://github.com/chrisfelix82"
   },
   "main": "app/index.js",
