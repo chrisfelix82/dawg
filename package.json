@@ -5,8 +5,8 @@
   "keywords": [
     "yeoman-generator"
   ],
-  "homepage": "https://github.com/chrisfelix82/generator-dawg",
-  "bugs": "https://github.com/chrisfelix82/generator-dawg/issues",
+  "homepage": "https://github.com/chrisfelix82/dawg",
+  "bugs": "https://github.com/chrisfelix82/dawg/issues",
   "author": {
     "name": "",
     "email": "",
@@ -15,7 +15,7 @@
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/chrisfelix82/generator-dawg.git"
+    "url": "git://github.com/chrisfelix82/dawg.git"
   },
   "scripts": {
     "test": "mocha"
