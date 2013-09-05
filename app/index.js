@@ -227,17 +227,7 @@ DawgGenerator.prototype.copyWorklightFiles = function copyWorklightFiles() {
 		this.write("apps/" + this.appName + "/common/css/common.css",this.envCss);
 		this.write("apps/" + this.appName + "/common/css/" + this.appName + ".css","@import url('./common.css');\n@import url('../commonapp/commonapp.css');\n");
 	}//end if
-	
-	//copy sample adapter over
-	var cb = this.async();
-	fsextra.copy(this._sourceRoot + "/adapters/User",this.options.env.cwd + "/adapters/User",function(err){
-		if(err){
-			console.error("Failed to copy User sample adapter");
-			cb(err);
-		}else{
-			cb();
-		}//end if
-	}.bind(this));
+
 };
 
 DawgGenerator.prototype.copyDevServer = function copyDevServer() {
