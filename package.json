@@ -1,44 +1,46 @@
 {
-  "name": "generator-dawg",
-  "version": "0.0.0",
-  "description": "A generator for Yeoman",
-  "keywords": [
-    "yeoman-generator"
-  ],
-  "homepage": "https://github.com/chrisfelix82/dawg",
-  "bugs": "https://github.com/chrisfelix82/dawg/issues",
-  "author": {
-    "name": "Chris Felix",
-    "email": "chrisfelix82@gmail.com",
-    "url": "https://github.com/chrisfelix82"
-  },
-  "main": "app/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/chrisfelix82/dawg.git"
-  },
-  "scripts": {
-    "test": "mocha"
-  },
-  "dependencies": {
-    "yeoman-generator": "~0.13.0",
-    "fs-extra": "~0.6.3"
-  },
-  "devDependencies": {
-    "mocha": "~1.12.0",
-    "walk": "~2.2.1",
-    "grunt": "~0.4.1"
-  },
-  "peerDependencies": {
-    "yo": ">=1.0.0-rc.1"
-  },
-  "engines": {
-    "node": ">=0.8.0",
-    "npm": ">=1.2.10"
-  },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ]
+	"name": "generator-dawg",
+	"version": "0.1.0",
+	"description": "A generator for Yeoman",
+	"keywords": ["yeoman-generator"],
+	"homepage": "https://github.com/chrisfelix82/dawg",
+	"bugs": "https://github.com/chrisfelix82/dawg/issues",
+	"author": {
+		"name": "Chris Felix",
+		"email": "chrisfelix82@gmail.com",
+		"url": "https://github.com/chrisfelix82"
+	},
+	"main": "app/index.js",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/chrisfelix82/dawg.git"
+	},
+	"scripts": {
+		"test": "mocha"
+	},
+	"dependencies": {
+		"yeoman-generator": "~0.13.0",
+		"fs-extra": "~0.6.3"
+	},
+	"devDependencies": {
+		"mocha": "~1.12.0",
+		"walk": "~2.2.1",
+		"grunt": "~0.4.1"
+	},
+	"peerDependencies": {
+		"yo": ">=1.0.0-rc.1"
+	},
+	"engines": {
+		"node": ">=0.8.0",
+		"npm": ">=1.2.10"
+	},
+	"licenses": [{
+		"type": "BSD",
+		"url": "https://github.com/dojo/dojo/blob/master/LICENSE#L13"
+	},
+	{
+		"type": "AFLv2.1",
+		"url": "https://github.com/dojo/dojo/blob/master/LICENSE#L43"
+	}],
+	"readmeFilename": "README.md"
 }
