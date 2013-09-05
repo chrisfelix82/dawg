@@ -239,7 +239,7 @@ DawgGenerator.prototype.copyDevServer = function copyDevServer() {
 			 console.error("Failed to copy dev_server" + err);
 			 cb(err);
 		   }else{
-			   this.copy("_app.js","dev_server/app.js");
+			   this.template("_app.js","dev_server/app.js");
 			   cb();
 		   }//end if
 	}.bind(this));

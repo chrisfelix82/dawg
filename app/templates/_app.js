@@ -1,4 +1,4 @@
-// Configuration Object for Dojo Loader:
+//Configuration Object for Dojo Loader:
 dojoConfig = {
     baseUrl: "./dev_server", // Where we will put our packages
     async: 1, // We want to make sure we are using the "modern" loader
@@ -12,30 +12,27 @@ dojoConfig = {
     // explicit about our package map.
     packages: [
 	{
-		name: "app",
-		location: "app"
+		name: "shared",
+		location: "shared"
 	},
 	{
-		name: "app-client",
-		location: "app-client"
+		name: "frontend",
+		location: "frontend"
 	},
     {
-        name: "app-server",
-        location: "app-server"
-    },{
+        name: "backend",
+        location: "backend"
+    },
+    {
         name: "dojo",
         location: "../dojo/dojo"
     },
     {
-        name: "dojo-src",
-        location: "../dojo"
-    },
-    {
         name: "common",
-        location: "../apps/main/common"
+        location: "../apps/<%= appName %>/common"
     }
     ],
-    deps: ["app-server/server"]
+    deps: ["backend/server"]
 };
  
 // Now load the Dojo loader

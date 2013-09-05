@@ -1,4 +1,4 @@
-require(["dojo/_base/declare","app-server/global"],function(declare,global){
+require(["dojo/_base/declare","backend/global"],function(declare,global){
 	
 	var path = "/rest/message";
 	var app = global.app;
