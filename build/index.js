@@ -63,6 +63,7 @@ BuildGenerator.prototype.copyBuild = function copyBuild() {
 			this.template("_build-dojo_test.properties",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo_test.properties");
 			this.copy("build-dojo.xml",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
 			this.buildDojoXML = this.readFileAsString(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
+			console.log(this.buildDojoXML);
 			this.buildDojoXML = this.buildDojoXML.replace("dojoLibProject",this.dojoLibProject);
 			this.write(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml",this.buildDojoXML);
 		}//end if
