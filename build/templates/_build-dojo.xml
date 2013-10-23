@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-dojo" default="copy-resources" basedir=".">
+	<!-- This file does not require editing. To add dojo resources to applications, 
+		add the dojo resources to the dojo root folder and then they will automatically 
+		be placed inside of dojo applications. All files and folders under the dojo 
+		root will be copied in to applications that have been enabled for dojo. -->
+	<description>
+		Build file for handling the Dojo Toolkit during the build.
+	</description>
+
+	<property file="build-dojo.properties" />
+	<property name="prefs.file"
+		value="../../.settings/com.ibm.imp.worklight.core.prefs" />
+
+	<target name="-check-prefs-exist">
+		<available file="${prefs.file}" property="prefs.exists" />
+	</target>
+
+	<target name="-check-dojo-enablement" depends="-check-prefs-exist"
+		if="prefs.exists">
+		<loadproperties srcFile="${prefs.file}">
+			<filterchain>
+				<linecontains>
+					<contains value="toolkit/apps/${app.id}/dojo=true" />
+				</linecontains>
+			</filterchain>
+		</loadproperties>
+	</target>
+
+	<target name="-compute-dojo-root" if="dojo.workspaceRoot">
+		<property name="dojo.root" value="../../..${dojo.workspaceRoot}" />
+	</target>
+
+	<target name="-display-dojo-warning" unless="toolkit/apps/${app.id}/dojo">
+		<echo level="error">The Dojo Toolkit has not been added to the
+			application.</echo>
+	</target>
+
+	<target name="-display-build-dir-warning" unless="build.dir">
+		<echo level="error">The build.dir property is not specified.</echo>
+		<echo level="info">Do not run the target manually. The target is
+			automatically called by Worklight Studio and the standalone builder.
+		</echo>
+	</target>
+
+	<target name="-init-copy-resources" depends="-check-dojo-enablement,-compute-dojo-root">
+		<condition property="copy-resources.enabled">
+			<and>
+				<isset property="toolkit/apps/${app.id}/dojo" />
+				<isset property="dojo.root" />
+				<isset property="build.dir" />
+			</and>
+		</condition>
+		<antcall target="-display-dojo-warning" />
+		<antcall target="-display-build-dir-warning" />
+	</target>
+
+	<!-- All files and folders under the dojo root will be copied in to applications 
+		that have been enabled for dojo. -->
+	<target name="copy-resources" depends="-init-copy-resources,init"
+		if="copy-resources.enabled">
+		<taskdef resource="net/sf/antcontrib/antlib.xml">
+			<classpath>
+				<pathelement location="${buildScriptsDir}/ant-contrib-1.0b3.jar" />
+			</classpath>
+		</taskdef>
+
+		<sequential>
+			<if>
+				<equals arg1="${dojo.custom.fullBuild}" arg2="true" />
+				<then>
+					<exec dir="${buildScriptsDir}/../dojo/util/buildscripts"
+						executable="bash" osfamily="unix">
+						<arg line="build.sh --profile ${buildScriptsDir}/mobile.profile.js --appConfigFile ${basedir}/common/commonapp/config.json " />
+					</exec>
+					<copy todir="${dojo.root}/layers">
+						<fileset dir="${buildScriptsDir}/release/layers">
+							<exclude name="**/*.uncompressed.js" />
+						</fileset>
+					</copy>
+					<for list="${copyFiles}" param="file" trim="true">
+						<sequential>
+							<copy file="${buildScriptsDir}/release/@{file}" toFile="${dojo.root}/@{file}" />
+						</sequential>
+					</for>
+					<copy todir="${dojo.root}/dojo/cldr">
+						<fileset dir="${buildScriptsDir}/release/dojo/cldr">
+							<exclude name="**/*.uncompressed.js" />
+						</fileset>
+					</copy>
+					
+					<if>
+					<equals arg1="${dojo.custom.copyBuiltEnvironments}" arg2="true" />
+					<then>
+					<for list="${dojo.custom.buildEnvironments}" param="env" trim="true">
+					<sequential>
+						<delete includeemptydirs="true" failonerror="true">
+							<fileset dir="${basedir}/@{env}/@{env}app" includes="**/*" excludes="**/.jazzignore" />
+						</delete>
+						<echo message="Copying built files for environment: @{env}" />
+						<copy todir="${basedir}/@{env}/@{env}app">
+							<fileset dir="${buildScriptsDir}/release/@{env}app">
+								<exclude name="**/*.uncompressed.js" />
+								<exclude name="**/css/**"/>
+								<exclude name="**/*.css"/>
+							</fileset>
+						</copy>
+						<copy file="${buildScriptsDir}/release/@{env}app/@{env}app.css" toFile="${basedir}/@{env}/@{env}app/@{env}app.css"/>
+					</sequential>
+					</for>
+					</then>
+					</if>
+				</then>
+			</if>
+			<copy todir="${build.dir}">
+				<fileset dir="${dojo.root}" />
+			</copy>
+		</sequential>
+	</target>
+
+	<target name="init">
+		<property name="buildScriptsDir" value="${basedir}/../../../dojoLibProject/toolkit/build" />
+		<property name="copyFiles"
+			value=""
+		</property>
+</project>
