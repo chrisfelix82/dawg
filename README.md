@@ -29,10 +29,18 @@ To install generator-dawg from npm, run (currently not published to npm. Install
 $ npm install -g git://github.com/chrisfelix82/dawg.git
 ```
 
-Finally, initiate the generator:
+Once installed, cd to the Worklight project directory to issue the following commands:
+
+To add custom dojo build support to your Worklight 6 Dojo enabled project:
 
 ```
-$ yo dawg
+$ yo dawg:build dojo
+```
+
+To create a new dojox/app based view/template.  NOTE: replace main with the Worklight app name:
+
+```
+$ yo dawg:view main
 ```
 
 ### Getting To Know Yeoman
