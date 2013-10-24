@@ -49,7 +49,7 @@ EnvGenerator.prototype.files = function files() {
   if(this.devHtml.indexOf(this.envName) === -1){
 	  var dojoConfig = this.devHtml.substring(this.devHtml.indexOf("{"),this.devHtml.indexOf("};"));
 	  dojoConfig = JSON.parse(dojoConfig + "}");
-	  dojoConfig.packages.push({"name": this.envName + "app", "location": "http://localhost:3434/" + this.envName + "app"});
+	  dojoConfig.packages.push({"name": this.envName + "app", "location": "http://localhost:10080/" + this.envName + "app"});
 	  this.dojoPackages = JSON.stringify(dojoConfig.packages);
 	  this.template("_Main.html","apps/" + this.appName + "/common/" + this.appName + ".html");
 	  
@@ -67,31 +67,5 @@ EnvGenerator.prototype.files = function files() {
 	  this.write("apps/" + this.appName + "/" + this.envName + "/css/" + this.appName + ".css","@import url('./" + this.envName + 
 			  ".css');\n@import url('../" + this.envName + "app/" + this.envName + "app.css');\n");
   }//end if
-};
-
-EnvGenerator.prototype.addToDevServer = function addToDevServer() {
-	var appjs = this.readFileAsString(this.options.env.cwd + "/dev_server/app.js");
-	var serverjs = this.readFileAsString(this.options.env.cwd + "/dev_server/backend/server.js");
-	//Determine if this environment is already added to the dev_server
-	if(appjs.indexOf(this.envName) === -1){
-		//We have not added the environment, so add it now
-		var startIndex = appjs.indexOf("{");
-		var endIndex = appjs.indexOf("};");
-		var jsonString = appjs.substring(startIndex,endIndex) + "}";
-		//Now append to packages 
-		var o = JSON.parse(jsonString);
-		o.packages.push({"name": this.envName, "location": "../apps/" + this.appName + "/" + this.envName});
-		var s = "//Configuration Object for Dojo Loader:\ndojoConfig = " + JSON.stringify(o) + ";\n//Now load the Dojo loader\nrequire('../dojo/dojo/dojo.js');";
-		this.write(this.options.env.cwd + "/dev_server/app.js",s);
-	}//end if
-	
-	if(serverjs.indexOf(this.envName) === -1){
-		//Now we need to modify backend/server.js to add the env dir to static content root
-		startIndex = serverjs.indexOf("});");
-		var beforeInsert = serverjs.substring(0,startIndex);
-		var insert = 'app.use(express.static(require.toUrl("' + this.envName + '")));\n});';
-		var afterInsert = serverjs.substring(startIndex + 3);
-		this.write(this.options.env.cwd + "/dev_server/backend/server.js",beforeInsert + insert + afterInsert);
-	}//end if
 };
 
