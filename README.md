@@ -31,6 +31,12 @@ $ npm install -g git://github.com/chrisfelix82/dawg.git
 
 Once installed, cd to the Worklight project directory to issue the following commands:
 
+To scaffold a basic dojox/app with one sample view, run the following in a Worklight 6 Dojo enabled project:
+
+```
+$ yo dawg
+```
+
 To add custom dojo build support to your Worklight 6 Dojo enabled project:
 
 ```
