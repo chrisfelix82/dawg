@@ -47,7 +47,7 @@ If you add a new environment (e.g. iphone), scaffold that environment with the f
 
 ```
 $ yo dawg:env main
-'''
+```
 
 To create a new dojox/app based view/template.  NOTE: replace main with the Worklight app name:
 
