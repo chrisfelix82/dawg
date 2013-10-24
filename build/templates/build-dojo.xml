@@ -115,6 +115,13 @@
 			<copy todir="${build.dir}">
 				<fileset dir="${dojo.root}" />
 			</copy>
+			
+			<if>
+				<equals arg1="${dojo.custom.deleteReleaseFolder}" arg2="true" />
+				<then>
+					<delete dir="${buildScriptsDir}/release"/>
+				</then>
+			</if>
 		</sequential>
 	</target>
 
