@@ -56,21 +56,24 @@ BuildGenerator.prototype.askFor = function askFor() {
 
 BuildGenerator.prototype.copyBuild = function copyBuild() {
 		if(this.createBuildDir){
+			var cb = this.async();
 			console.log("Creating the build directory");
 			this.copy("build/ant-contrib-1.0b3.jar",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/ant-contrib-1.0b3.jar");
 			this.copy("build/library-requests.txt",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/library-requests.txt");
 			this.template("_build-dojo.properties",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.properties");
 			this.template("_build-dojo_test.properties",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo_test.properties");
 			this.copy("build-dojo.xml",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
+			cb();
 		}//end if
 };
 
 BuildGenerator.prototype.moreCopy = function(){
 	if(this.createBuildDir){
+		var cb = this.async();
 		this.buildDojoXML = this.readFileAsString(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
-		console.log(this.buildDojoXML);
 		this.buildDojoXML = this.buildDojoXML.replace("dojoLibProject",this.dojoLibProject);
 		this.write(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml",this.buildDojoXML);
+		cb();
 	}//end if
 };
 
