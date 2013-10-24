@@ -120,5 +120,7 @@
 
 	<target name="init">
 		<property name="buildScriptsDir" value="${basedir}/../../../dojoLibProject/toolkit/build" />
-		<property name="copyFiles"value="dojo/dojo.js" />
+		<property name="copyFiles" value="dojo/dojo.js" />
+	</target>
+	
 </project>
