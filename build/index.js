@@ -61,7 +61,7 @@ BuildGenerator.prototype.copyBuild = function copyBuild() {
 			this.copy("build/ant-contrib-1.0b3.jar",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/ant-contrib-1.0b3.jar");
 			this.copy("build/library-requests.txt",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/library-requests.txt");
 			this.template("_build-dojo.properties",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.properties");
-			this.template("_build-dojo_test.properties",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo_test.properties");
+			this.template("_build-dojo_prod.properties",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo_prod.properties");
 			this.copy("build-dojo.xml",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
 			cb();
 		}//end if
