@@ -131,7 +131,7 @@ ViewGenerator.prototype.files = function files() {
 		parent[fileName] = new Object();
 		parent[fileName].template = this.packageName + "/" + fileName + ".html";
 		parent[fileName].controller = this.packageName + "/" + fileName + ".js";
-		parent[fileName].nls = this.packageName + "/nls/" + fileName + ".js";
+		parent[fileName].nls = this.packageName + "/nls/" + fileName;
 	}//end if
 	this.write(this.appRoot + "common/commonapp/config.json",JSON.stringify(this.configJson));
 	
