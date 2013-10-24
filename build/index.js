@@ -118,13 +118,13 @@ BuildGenerator.prototype.processLibraryRequests = function processLibraryRequest
   //this.deps = this.deps.replace("]","");
   //console.log("Modules required for profile.js:\n",this.deps);
   this.appPackagesString = "";
-  for(var x = 0; x < this.appPackages;x++){
+  for(var x = 0; x < this.appPackages.length;x++){
 	  var o = new Object();
 	  o.name = this.appPackages[x] + "app";
 	  o.location = "../../../" + this.wlProject + "/apps/" + this.wlApp + "/" + this.appPackages[x] + "/" + this.appPackages[x] + "app";
 	  this.appPackagesString += "," + JSON.stringify(o);
   }//end for
-  
+  console.log("app packages to add to mobile.profile:",this.appPackagesString);
   this.template("build/_mobile.profile.js",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/mobile.profile.js");
   //console.log("NLS files:\n",this.nlsFiles);
   
