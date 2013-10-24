@@ -86,6 +86,8 @@
 					<copy todir="${dojo.root}/dojo/cldr">
 						<fileset dir="${buildScriptsDir}/release/dojo/cldr">
 							<exclude name="**/*.uncompressed.js" />
+							<include name="nls/en/**" />
+							<include name="*.js" />
 						</fileset>
 					</copy>
 					

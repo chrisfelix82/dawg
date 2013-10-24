@@ -36,6 +36,11 @@ BuildGenerator.prototype.askFor = function askFor() {
 	      default: "common"
 	  },
 	  {
+		  name: 'supportedLocales',
+	      message: 'What are the supported locales for the app? (comma delimited)',
+	      default: "en"
+	  },
+	  {
 		 name: 'dojoLibProject',
 		 message: 'What is the name of the dojo lib project?',
 		 default: "dojoLib"
@@ -45,7 +50,7 @@ BuildGenerator.prototype.askFor = function askFor() {
 		   name: 'createBuildDir',
 		   message: 'Create build dir?',
 		   default: false
-	}
+	  }
 	  ];
 
 	  this.prompt(prompts, function (props) {
@@ -53,6 +58,7 @@ BuildGenerator.prototype.askFor = function askFor() {
 		  this.libraryRequestsFile = this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/library-requests.txt";
 		  this.wlProject = props.wlProject;
 		  this.wlApp = props.wlApp;
+		  this.supportedLocales = props.supportedLocales;
 		  this.appPackages = props.appPackages;
 		  this.appPackages = this.appPackages.split(",");
 		  this.createBuildDir = props.createBuildDir;
@@ -124,6 +130,7 @@ BuildGenerator.prototype.processLibraryRequests = function processLibraryRequest
 	  o.location = "../../../" + this.wlProject + "/apps/" + this.wlApp + "/" + this.appPackages[x] + "/" + this.appPackages[x] + "app";
 	  this.appPackagesString += "," + JSON.stringify(o) + "\n";
   }//end for
+
   //console.log("app packages to add to mobile.profile:",this.appPackagesString);
   this.template("build/_mobile.profile.js",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/mobile.profile.js");
   //console.log("NLS files:\n",this.nlsFiles);

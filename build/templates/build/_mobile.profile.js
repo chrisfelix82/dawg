@@ -12,7 +12,7 @@ var profile = (function() {
 		cssOptimize: "comments",
 		multipleAppConfigLayers : true,
 		copyTests: false,
-		localeList: 'en',
+		localeList: '<%= supportedLocales %>',
 		
 		packages : [ 
 		{
