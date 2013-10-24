@@ -34,7 +34,7 @@ Once installed, cd to the Worklight project directory to issue the following com
 To add custom dojo build support to your Worklight 6 Dojo enabled project:
 
 ```
-$ yo dawg:build dojo
+$ yo dawg:build profile
 ```
 
 To scaffold a basic dojox/app with one sample view, run the following in a Worklight 6 Dojo enabled project:
