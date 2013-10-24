@@ -40,19 +40,8 @@ var profile = (function() {
 		{
 			name : "layers",
 			location : "layers"
-		},
-		{
-			name: "commonapp",
-			location: "../../../<%= wlProject %>/apps/<%= wlApp %>/common/commonapp"
-		},
-		{
-			name: "iphoneapp",
-			location: "../../../<%= wlProject %>/apps/<%= wlApp %>/iphone/iphoneapp"
-		},
-		{
-			name: "androidapp",
-			location: "../../../<%= wlProject %>/apps/<%= wlApp %>/android/androidapp"
 		}
+		<%= appPackagesString %>
 		],
 
 		layers : {

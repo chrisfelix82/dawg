@@ -31,6 +31,11 @@ BuildGenerator.prototype.askFor = function askFor() {
 	      default: "main"
 	  },
 	  {
+		  name: 'appPackages',
+	      message: 'What are the worklight environments the project supports? (comma delimited)',
+	      default: "common"
+	  },
+	  {
 		 name: 'dojoLibProject',
 		 message: 'What is the name of the dojo lib project?',
 		 default: "dojoLib"
@@ -40,7 +45,7 @@ BuildGenerator.prototype.askFor = function askFor() {
 		   name: 'createBuildDir',
 		   message: 'Create build dir?',
 		   default: false
-		}
+	}
 	  ];
 
 	  this.prompt(prompts, function (props) {
@@ -48,6 +53,8 @@ BuildGenerator.prototype.askFor = function askFor() {
 		  this.libraryRequestsFile = this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/library-requests.txt";
 		  this.wlProject = props.wlProject;
 		  this.wlApp = props.wlApp;
+		  this.appPackages = props.appPackages;
+		  this.appPackages = this.appPackages.split(",");
 		  this.createBuildDir = props.createBuildDir;
 		  this.buildDojoXML =  this.readFileAsString(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
 		  cb();
@@ -110,6 +117,14 @@ BuildGenerator.prototype.processLibraryRequests = function processLibraryRequest
  // this.deps = this.deps.replace("[","");
   //this.deps = this.deps.replace("]","");
   //console.log("Modules required for profile.js:\n",this.deps);
+  this.appPackagesString = "";
+  for(var x = 0; x < this.appPackages;x++){
+	  var o = new Object();
+	  o.name = this.appPackages[x] + "app";
+	  o.location = "../../../" + this.wlProject + "/apps/" + this.wlApp + "/" + this.appPackages[x] + "/" + this.appPackages[x] + "app";
+	  this.appPackagesString += "," + JSON.stringify(o);
+  }//end for
+  
   this.template("build/_mobile.profile.js",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/mobile.profile.js");
   //console.log("NLS files:\n",this.nlsFiles);
   
