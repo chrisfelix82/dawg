@@ -2,46 +2,42 @@
 	"id": "app",
 	"name": "app",
 	"description": "Example dojox/app based Worklight app",
-	"dependencies": ["dojox/mobile/Heading",
-	"dojo/store/Memory",
-	"dojo/store/Observable",
-	"dojox/mvc/EditStoreRefListController",
-	"dojox/app/utils/mvcModel",
-	"dojo/store/DataStore",
-	"commonapp/utils/WorklightStore",
-	"commonapp/utils/hybridConsole"],
-	
-	"controllers": ["dojox/app/controllers/Load",
+	"dependencies": [
+		"commonapp/app",
+		"commonapp/BaseViewController",
+		"dojo/store/Memory",
+		"dojox/app/utils/mvcModel",
+		"dojox/mvc/EditStoreRefListController",
+		"dojo/store/Observable"
+	],
+	"controllers": [
+	"dojox/app/controllers/Load",
 	"dojox/app/controllers/Transition",
-	"dojox/app/controllers/Layout"],
+	"dojox/app/controllers/Layout",
+	"dojox/app/controllers/HistoryHash"],
 	
 	"stores": {
-		"userStore": {
-			"type": "commonapp/utils/WorklightStore",
-			"observable": true,
-			"params": {
-				"resourceName": "User",
-				"searchFields": {
-					"id": "string",
-					"name": "string"
-				},
-				"idProperty": "id"
-			}
-		}
+		
 	},
 	"models": {
-		"userModelMVC": {
-			"modelLoader": "dojox/app/utils/mvcModel",
-			"type": "dojox/mvc/EditStoreRefListController",
-			"params": {
-				"store": {
-					"$ref": "#stores.userStore"
+		
+	},
+	
+	"defaultView": "MainTemplate",
+	"defaultTransition": "slide",
+	"views": {
+		"MainTemplate": {
+			"template": "commonapp/templates/MainTemplate.html",
+			"controller": "commonapp/templates/MainTemplate.js",
+			"nls": "commonapp/templates/nls/MainTemplate",
+			"defaultView": "SampleView",
+			"views": {
+				"SampleView": {
+					"template": "commonapp/sample/SampleView.html",
+					"controller": "commonapp/sample/SampleView.js",
+					"nls": "commonapp/sample/nls/SampleView"
 				}
 			}
 		}
-	},
-	"defaultView" : "testView",
-	"defaultTransition": "slide",
-	"views": {
-		}
+	}
 }

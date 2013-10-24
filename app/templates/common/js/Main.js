@@ -6,6 +6,8 @@
 */
 
 function wlCommonInit(){
+	require(["layers/mobile-ui-layer"],dojoInit);
+	
 	/*
 	 * Application is started in offline mode as defined by a connectOnStartup property in initOptions.js file.
 	 * In order to begin communicating with Worklight Server you need to either:
@@ -24,9 +26,11 @@ function wlCommonInit(){
 	 *    });
 	 *     
 	 */
-	
-	require(["commonapp/app"],function(app){
+
+}
+
+function dojoInit(){
+	require(["commonapp/app","dojo/domReady!"],function(app){
 		app.init();
 	});
-
 }

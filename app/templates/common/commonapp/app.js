@@ -5,16 +5,16 @@ define(["dojo/_base/declare",
         "dojox/json/ref",
         "dojo/has",
         "module",
-        "dojo/domReady!"],function(declare,lang,Application,config,jsonRef,has,module){
+        "dojo/dom-class",
+        "dojo/Deferred",
+        "dojo/topic",
+        "dojo/domReady!"],function(declare,lang,Application,config,jsonRef,has,module,domClass,Deferred,topic){
 	// description:
 	//		This class bootstraps the application.  js/Main.js calls the init() method on the singleton instance of the class.
 	
 	var MODULE = module.id;
 	var instance = declare([],{
 		
-		// app : Object
-		//		The dojox/app instance
-		app : null,
 		
 		constructor : function(args){
 			// summary:
@@ -34,6 +34,16 @@ define(["dojo/_base/declare",
  
 			var F = MODULE + ":init:";
 			console.debug(F,"Initializing the app");
+			
+			//This is a fix for the full screen UIViewController in iOS 7.  i.e. we push the body down by 20px, which is the height of the 
+			//status bar
+			if (window.device && (WL.Client.getEnvironment() == WL.Environment.IPAD || WL.Client.getEnvironment() == WL.Environment.IPHONE)
+					&& parseFloat(window.device.version) >= 7.0) {
+		        //Make sure that the body tag contains the wl_ios7 class
+				domClass.add(window.document.body,"wl_ios7");
+		       console.warn("Added wl_ios7 class to body element");
+			}//end if
+			
 			//load app's config.json file
 			var c = jsonRef.fromJson(config);
 			
@@ -45,9 +55,27 @@ define(["dojo/_base/declare",
 	
 			this._defineHas();
 			document.addEventListener('touchmove', function(e) { e.preventDefault(); }, false);
+			
+			
+			if(WL.Client.getEnvironment == WL.Environment.IPAD || WL.Client.getEnvironment == WL.Environment.IPHONE){
+				WL.App.BackgroundHandler.setOnAppEnteringForeground(lang.hitch(this,this._onForeground));
+				WL.App.BackgroundHandler.setOnAppEnteringBackground(lang.hitch(this,this._onBackground));
+			}//end if
+			
+			
 			//Initialize the dojox/app
-			this.app = Application(c);
+			Application(c);
+			WL.Client.connect({
+					onSuccess: function(){console.debug("Success connecting to Worklight server!");},
+					onFailure: function(){alert("Failed to connect to Worklight server.  Make sure that you are connected to the IBM intranet.");}
+				});
+				
+			//TODO: do this better
+			//fix for one ui styles not working with this class added
+			setTimeout(function(){domClass.remove(document.getElementsByTagName("html")[0],"dj_ios6");},500);
+				
 			console.debug(F,"APP STARTED!",this.app);
+	
 		},
 		
 		_defineHas : function(){
@@ -62,6 +90,14 @@ define(["dojo/_base/declare",
 				return WL.Client.getEnvironment() === WL.Environment.IPAD;
 				});
 			
+		},
+		
+		_onForeground : function(){
+			topic.publish("app/enterforeground", null);
+		},
+		
+		_onBackground : function(){
+			topic.publish("app/enterbackground", null);
 		}
 		
 		

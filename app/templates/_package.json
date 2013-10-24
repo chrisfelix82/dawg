@@ -2,10 +2,6 @@
   "name": "package",
   "version": "0.0.0",
   "dependencies": {
-  	"grunt": "~0.4.1",
-    "express": "~3.3.5",
-    "socket.io": "~0.9.16",
-    "mongoose": "~3.6.18",
-    "appium": "~0.8.5"
+  	"grunt": "~0.4.1"
   }
 }
