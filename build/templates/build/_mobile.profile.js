@@ -40,8 +40,7 @@ var profile = (function() {
 		{
 			name : "layers",
 			location : "layers"
-		}
-		<%= appPackagesString %>
+		}<%= appPackagesString %>
 		],
 
 		layers : {
