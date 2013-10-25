@@ -44,6 +44,10 @@ var profile = (function() {
 		],
 
 		layers : {
+			"commonapp/app" : {
+				include: ["commonapp/app"],
+				exclude: ["layers/mobile-ui-layer"]
+			},
 			"layers/mobile-ui-layer" : {
 				include : <%= deps %>
 			}
