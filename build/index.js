@@ -46,6 +46,11 @@ BuildGenerator.prototype.askFor = function askFor() {
 		 default: "dojoLib"
 	  },
 	  {
+			 name: 'buildProject',
+			 message: 'What is the name of the build project?',
+			 default: "Build"
+	  },
+	  {
 		   type: "confirm",
 		   name: 'createBuildDir',
 		   message: 'Create build dir?',
@@ -55,14 +60,18 @@ BuildGenerator.prototype.askFor = function askFor() {
 
 	  this.prompt(prompts, function (props) {
 		  this.dojoLibProject = props.dojoLibProject;
-		  this.libraryRequestsFile = this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/library-requests.txt";
+		  this.buildProject = props.buildProject;
+		  this.libraryRequestsFile = this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/library-requests.txt";
 		  this.wlProject = props.wlProject;
 		  this.wlApp = props.wlApp;
 		  this.supportedLocales = props.supportedLocales;
 		  this.appPackages = props.appPackages;
 		  this.appPackages = this.appPackages.split(",");
 		  this.createBuildDir = props.createBuildDir;
-		  this.buildDojoXML =  this.readFileAsString(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
+		  if(!this.createBuildDir){
+			  this.buildXML =  this.readFileAsString(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build.xml");
+			  this.buildXMLRTC = this.readFileAsString(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build_RTC.xml");
+		  }//end if
 		  cb();
 	  }.bind(this));
 	};
@@ -71,11 +80,14 @@ BuildGenerator.prototype.copyBuild = function copyBuild() {
 		if(this.createBuildDir){
 			var cb = this.async();
 			console.log("Creating the build directory");
-			this.copy("build/ant-contrib-1.0b3.jar",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/ant-contrib-1.0b3.jar");
-			this.copy("build/library-requests.txt",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/library-requests.txt");
-			this.template("_build-dojo.properties",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.properties");
-			this.template("_build-dojo_prod.properties",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo_prod.properties");
-			this.copy("build-dojo.xml",this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
+			//this.copy("lib/ant-contrib-1.0b3.jar",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/lib/ant-contrib-1.0b3.jar");
+			this.copy("library-requests.txt",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/library-requests.txt");
+			this.copy("scripts/_build.xml",this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build.xml");
+			this.copy("scripts/_build_RTC.xml",this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build_RTC.xml");
+			this.copy("lib/README.md",this.options.env.cwd + "/../" + this.buildProject + "/build/lib/README.md");
+			this.copy("output/dojo/blank.txt",this.options.env.cwd + "/../" + this.buildProject + "/build/output/dojo/blank.txt");
+			this.copy("output/worklight/blank.txt",this.options.env.cwd + "/../" + this.buildProject + "/build/output/worklight/blank.txt");
+			this.copy("output/worklight/classes/blank.txt",this.options.env.cwd + "/../" + this.buildProject + "/build/output/worklight/classes/blank.txt");
 			cb();
 		}//end if
 };
@@ -83,9 +95,18 @@ BuildGenerator.prototype.copyBuild = function copyBuild() {
 BuildGenerator.prototype.moreCopy = function(){
 	if(this.createBuildDir){
 		var cb = this.async();
-		this.buildDojoXML = this.readFileAsString(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml");
-		this.buildDojoXML = this.buildDojoXML.replace("dojoLibProject",this.dojoLibProject);
-		this.write(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml",this.buildDojoXML);
+		this.buildXMLRTC = this.readFileAsString(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build_RTC.xml");
+		this.buildXML = this.readFileAsString(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build.xml");
+		this.buildXML = this.buildXML.replace(/<%= wlProject %>/g,this.wlProject);
+		this.buildXML = this.buildXML.replace(/<%= wlApp %>/g,this.wlApp);
+		this.buildXML = this.buildXML.replace(/<%= appPackages %>/g,this.appPackages);
+		this.buildXML = this.buildXML.replace(/<%= dojoLibProject %>/g,this.dojoLibProject);
+		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= wlProject %>/g,this.wlProject);
+		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= wlApp %>/g,this.wlApp);
+		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= appPackages %>/g,this.appPackages);
+		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= dojoLibProject %>/g,this.dojoLibProject);
+		this.write(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build.xml",this.buildXML);
+		this.write(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build_RTC.xml",this.buildXMLRTC);
 		cb();
 	}//end if
 };
@@ -102,7 +123,7 @@ BuildGenerator.prototype.processLibraryRequests = function processLibraryRequest
   while(startIndex >= 0){
 	  startIndex = startIndex + 6;
 	  var endIndex = requestsString.indexOf("\n",startIndex);  
-	  if(startIndex === endIndex){console.log("Start index = end index");break;}
+	  if(startIndex === endIndex || endIndex === -1){console.log("Start index = end index or endIndex = -1. done.");break;}
 	  var dep = requestsString.substring(startIndex,endIndex);
 	  if(dep.indexOf("deviceTheme") === -1 && dep.indexOf("/nls") === -1 && dep.indexOf(".js", dep.length - 3) !== -1){
 		  this.deps.push(dep.replace(".js",""));
@@ -115,7 +136,7 @@ BuildGenerator.prototype.processLibraryRequests = function processLibraryRequest
 	 
 	  startIndex = requestsString.indexOf("/dojo/",endIndex);
   }//end while
-  
+ 
   this.otherFiles.push("dojo/dojo.js");//Always copy dojo.js over
   
   this.deps = JSON.stringify(this.deps);
@@ -132,7 +153,7 @@ BuildGenerator.prototype.processLibraryRequests = function processLibraryRequest
   }//end for
 
   //console.log("app packages to add to mobile.profile:",this.appPackagesString);
-  this.template("build/_mobile.profile.js",this.options.env.cwd + "/../" + this.dojoLibProject + "/toolkit/build/mobile.profile.js");
+  this.template("scripts/_mobile.profile.js",this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/mobile.profile.js");
   //console.log("NLS files:\n",this.nlsFiles);
   
   this.otherFiles = this.otherFiles.replace("[","");
@@ -140,10 +161,16 @@ BuildGenerator.prototype.processLibraryRequests = function processLibraryRequest
   this.otherFiles = this.otherFiles.toString().replace(/\"/g,"");
   //console.log("Other files to be copied:\n",this.otherFiles);
   
-  var copyFilesStartIndex = this.buildDojoXML.indexOf('name="copyFiles"') + 16;
-  copyFilesStartIndex =  this.buildDojoXML.indexOf('value="',copyFilesStartIndex) + 7;
-  var valueToReplace = this.buildDojoXML.substring(copyFilesStartIndex,this.buildDojoXML.indexOf('"',copyFilesStartIndex));
-  this.buildDojoXML = this.buildDojoXML.replace(valueToReplace,this.otherFiles);
+  var copyFilesStartIndex = this.buildXML.indexOf('name="copyFiles"') + 16;
+  copyFilesStartIndex =  this.buildXML.indexOf('value="',copyFilesStartIndex) + 7;
+  var valueToReplace = this.buildXML.substring(copyFilesStartIndex,this.buildXML.indexOf('"',copyFilesStartIndex));
+  this.buildXML = this.buildXML.replace(valueToReplace,this.otherFiles);
+  this.write(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build.xml",this.buildXML);
   
-  this.write(this.options.env.cwd + "/apps/" + this.wlApp + "/build-dojo.xml",this.buildDojoXML);
+  copyFilesStartIndex = this.buildXMLRTC.indexOf('name="copyFiles"') + 16;
+  copyFilesStartIndex =  this.buildXMLRTC.indexOf('value="',copyFilesStartIndex) + 7;
+  var valueToReplace = this.buildXMLRTC.substring(copyFilesStartIndex,this.buildXMLRTC.indexOf('"',copyFilesStartIndex));
+  this.buildXMLRTC = this.buildXMLRTC.replace(valueToReplace,this.otherFiles);
+  this.write(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build_RTC.xml",this.buildXMLRTC);
+  
 };
