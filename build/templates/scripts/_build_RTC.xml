@@ -1,0 +1,292 @@
+<?xml version="1.0"?>
+
+<project name="build" default="daily" basedir=".">
+
+	<target name="init">
+		
+		<property name="jazz_username" value="funcid@ca.ibm.com" />
+		<property name="jazz_password" value="TLIK1yao" />
+		
+		<!-- Add to RTC build definition properties
+		<property name="ios_env" value="iphone" />
+		<property name="ios_env_uppercase" value="Iphone" />
+		<property name="worklightProjectName" value="<%= wlProject %>" />
+		<property name="worklightAppName" value="<%= wlApp %>" />
+		<property name="worklightAppVersion" value="1.0" />
+		<property name="worklightServer" value="http://localhost:10080/<%= wlProject %>" />
+		<property name="worklightEnvironments" value="<%= appPackages %>" />
+		<property name="worklightAdapters"
+			value="" />
+		<property name="buildEnvironment" value="prod" />
+		-->
+		
+		<property name="ios_projectName"
+			value="${worklightProjectName}${worklightAppName}${ios_env_uppercase}" />
+		
+		<property name="worklightDir"
+			value="${basedir}/../../../${worklightProjectName}/apps/${worklightAppName}" />
+		<property name="worklightBuildOutputFolder" value="${basedir}/../output/worklight" />
+		<property name="www" value="${worklightDir}/../../www" />
+		<property name="dojo_src" value="${basedir}/../../../<%= dojoLibProject %>/toolkit/dojo" />
+		<property name="dojo_release" value="${basedir}/../output/dojo/release" />
+		<property name="dojo_delete_release_folder" value="true"/>
+		<property name="dojo_copy_built_app_packages" value="true"/>
+		<property name="copyFiles" value="dojo/dojo.js" />
+		
+		<taskdef resource="net/sf/antcontrib/antlib.xml">
+			<classpath>
+				<pathelement location="${basedir}/../lib/ant-contrib-1.0b3.jar" />
+			</classpath>
+		</taskdef>
+
+		<taskdef resource="com/worklight/ant/defaults.properties">
+			<classpath>
+				<pathelement location="${basedir}/../lib/worklight-ant.jar" />
+			</classpath>
+		</taskdef>
+
+		<path id="server-classpath">
+			<fileset dir="${worklightDir}/../../server/lib">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+		
+		<taskdef name="startBuildActivity"
+			classname="com.ibm.team.build.ant.task.StartBuildActivityTask" />
+		<taskdef name="artifactFilePublisher"
+			classname="com.ibm.team.build.ant.task.ArtifactFilePublisherTask" />
+
+	</target>
+
+	<!-- =========================================================================== -->
+	<!-- Targets: all -->
+	<!-- =========================================================================== -->
+	<target name="daily"
+		depends="buildwlapp,deploywlapp,buildAdapters,deployAdapters" />
+
+	<!-- Build dojo custom build -->
+	<target name="dojoBuild" depends="init">
+		<startBuildActivity repositoryAddress="${repositoryAddress}"
+			userId="${jazz_username}" password="${jazz_password}"
+			activityIdProperty="dojoBuild" label="Creating Dojo custom build"
+			autoComplete="true" verbose="true" buildResultUUID="${buildResultUUID}" />
+	
+		<exec dir="${dojo_src}/util/buildscripts" executable="bash" osfamily="unix">
+			<arg line='build.sh --profile ${basedir}/mobile.profile.js --appConfigFile ${worklightDir}/common/commonapp/config.json' />
+		</exec>
+		
+		<copy todir="${www}/layers">
+			<fileset dir="${dojo_release}/layers">
+				<exclude name="**/*.uncompressed.js" />
+			</fileset>
+		</copy>
+		<for list="${copyFiles}" param="file" trim="true">
+			<sequential>
+				<copy file="${dojo_release}/@{file}" toFile="${www}/@{file}" />
+			</sequential>
+		</for>
+		<copy todir="${www}/dojo/cldr">
+			<fileset dir="${dojo_release}/dojo/cldr">
+				<exclude name="**/*.uncompressed.js" />
+				<include name="nls/en/**" />
+				<include name="*.js" />
+			</fileset>
+		</copy>
+
+		<if>
+		<equals arg1="${dojo_copy_built_app_packages}" arg2="true" />
+		<then>
+		<for list="${worklightEnvironments}" param="env" trim="true">
+			<sequential>
+				<delete includeemptydirs="true" failonerror="true">
+					<fileset dir="${worklightDir}/@{env}/@{env}app" includes="**/*"
+						excludes="**/.jazzignore" />
+				</delete>
+				<echo message="Copying built files for environment: @{env}" />
+				<copy todir="${worklightDir}/@{env}/@{env}app">
+					<fileset dir="${dojo_release}/@{env}app">
+						<exclude name="**/*.uncompressed.js" />
+						<exclude name="**/css/**" />
+						<exclude name="**/*.css" />
+					</fileset>
+				</copy>
+				<copy file="${dojo_release}/@{env}app/@{env}app.css"
+					toFile="${worklightDir}/@{env}/@{env}app/@{env}app.css" />
+			</sequential>
+		</for>
+		</then>
+		</if>
+
+		<if>
+			<equals arg1="${dojo_delete_release_folder}" arg2="true" />
+			<then>
+				<delete dir="${dojo_release}" />
+			</then>
+		</if>
+		
+	</target>
+
+	<!-- =========================================================================== -->
+	<!-- Targets: copyFiles -->
+	<!-- =========================================================================== -->
+	<target name="copyFiles" depends="dojoBuild">
+		<if>
+		<equals arg1="${dojo_copy_built_app_packages}" arg2="true" />
+		<then>
+			<startBuildActivity repositoryAddress="${repositoryAddress}"
+			userId="${jazz_username}" password="${jazz_password}"
+			activityIdProperty="copyFiles" label="Copying files from Dojo custom build into Worklight project's www folder. Also making modifications for ${buildEnvironment} files."
+			autoComplete="true" verbose="true" buildResultUUID="${buildResultUUID}" />
+			
+			<echo message="Performing environment specific file modifications" />
+			<delete file="${worklightDir}/common/${worklightAppName}.html" />
+			<move file="${worklightDir}/common/${worklightAppName}_prod.html"
+			tofile="${worklightDir}/common/${worklightAppName}.html" />
+
+			<delete file="${worklightDir}/application-descriptor.xml" />
+			<move file="${worklightDir}/application-descriptor_${buildEnvironment}.xml"
+			tofile="${worklightDir}/application-descriptor.xml" />
+
+			<delete file="${worklightDir}/../../server/conf/worklight.properties" />
+			<move
+			file="${worklightDir}/../../server/conf/worklight_${buildEnvironment}.properties"
+			tofile="${worklightDir}/../../server/conf/worklight.properties" />
+
+			<echo message="Finished copying standard resources" />
+		</then>
+		</if>
+	</target>
+
+	<!-- =========================================================================== -->
+	<!-- Targets: buildwlapp -->
+	<!-- =========================================================================== -->
+	<target name="buildwlapp" depends="copyFiles">
+		<startBuildActivity repositoryAddress="${repositoryAddress}"
+			userId="${jazz_username}" password="${jazz_password}"
+			activityIdProperty="buildwlapp" label="Building the wlapp file with Dojo support"
+			autoComplete="true" verbose="true" buildResultUUID="${buildResultUUID}" />
+		<echo
+			message="Packaging workligt app ${worklightAppName} with app-builder ant task" />
+		<for list="${worklightEnvironments}" param="env" trim="true">
+			<sequential>
+				<app-builder environments="@{env}" nativeProjectPrefix="${worklightProjectName}"
+					applicationFolder="${worklightDir}" outputFolder="${worklightBuildOutputFolder}/${buildResultUUID}"
+					worklightServerHost="${worklightServer}" skinBuildExtensions="build-dojo.xml">
+				</app-builder>
+				
+				<if>
+					<equals arg1="@{env}" arg2="common" />
+					<then>
+						<artifactFilePublisher repositoryAddress="${repositoryAddress}"
+		                       userId="${jazz_username}"
+		                       password="${jazz_password}"
+		                       buildResultUUID="${buildResultUUID}"
+		                       filePath="${worklightBuildOutputFolder}/${buildResultUUID}/${worklightAppName}-@{env}.wlapp"
+		                       label="${worklightAppName}-@{env}.wlapp" />
+					</then>
+					<else>
+						<artifactFilePublisher repositoryAddress="${repositoryAddress}"
+		                       userId="${jazz_username}"
+		                       password="${jazz_password}"
+		                       buildResultUUID="${buildResultUUID}"
+		                       filePath="${worklightBuildOutputFolder}/${buildResultUUID}/${worklightAppName}-@{env}-${worklightAppVersion}.wlapp"
+		                       label="${worklightAppName}-@{env}-${worklightAppVersion}.wlapp" />
+					</else>
+				</if>
+			</sequential>
+		</for>
+	</target>
+
+	<!-- =========================================================================== -->
+	<!-- Targets: deploywlapp -->
+	<!-- =========================================================================== -->
+	<target name="deploywlapp" depends="init">
+		<startBuildActivity repositoryAddress="${repositoryAddress}"
+			userId="${jazz_username}" password="${jazz_password}"
+			activityIdProperty="deploywlapp" label="Deploying the wlapp file"
+			autoComplete="true" verbose="true" buildResultUUID="${buildResultUUID}" />
+		<echo
+			message="Deploying ${worklightProjectName}:${worklightAppName} to worklight server ${worklightServer} using app-deployer ant task" />
+		<for list="${worklightEnvironments}" param="env" trim="true">
+			<sequential>
+				<if>
+					<equals arg1="@{env}" arg2="common" />
+					<then>
+						<app-deployer
+							deployable="${worklightBuildOutputFolder}/${buildResultUUID}/${worklightAppName}-@{env}.wlapp"
+							worklightServerHost="${worklightServer}">
+						</app-deployer>
+					</then>
+					<else>
+						<app-deployer
+							deployable="${worklightBuildOutputFolder}/${buildResultUUID}/${worklightAppName}-@{env}-${worklightAppVersion}.wlapp"
+							worklightServerHost="${worklightServer}">
+						</app-deployer>
+					</else>
+				</if>
+			</sequential>
+		</for>
+	</target>
+
+	<!-- Target: buildAdapter -->
+	<target name="buildAdapters" depends="init">
+		<startBuildActivity repositoryAddress="${repositoryAddress}"
+			userId="${jazz_username}" password="${jazz_password}"
+			activityIdProperty="buildAdpaters" label="Building Worklight adapters"
+			autoComplete="true" verbose="true" buildResultUUID="${buildResultUUID}" />
+		<echo message="Build worklight adapter for project ${worklightProjectName}" />
+		<for list="${worklightAdapters}" param="adapter" trim="true">
+			<sequential>
+				<adapter-builder folder="${worklightDir}/../../adapters/@{adapter}"
+					destinationFolder="${worklightBuildOutputFolder}/${buildResultUUID}">
+				</adapter-builder>
+				<artifactFilePublisher repositoryAddress="${repositoryAddress}"
+		                       userId="${jazz_username}"
+		                       password="${jazz_password}"
+		                       buildResultUUID="${buildResultUUID}"
+		                       filePath="${worklightBuildOutputFolder}/${buildResultUUID}/@{adapter}.adapter"
+		                       label="@{adapter}.adapter" />
+			</sequential>
+		</for>
+	</target>
+
+	<!-- Target: deployAdapter -->
+	<target name="deployAdapters" depends="init">
+		<startBuildActivity repositoryAddress="${repositoryAddress}"
+			userId="${jazz_username}" password="${jazz_password}"
+			activityIdProperty="deployAdpaters" label="Deploying Worklight adapters"
+			autoComplete="true" verbose="true" buildResultUUID="${buildResultUUID}" />
+		<echo message="Deploy worklight adapter for project ${worklightProjectName}" />
+		<for list="${worklightAdapters}" param="adapter" trim="true">
+			<sequential>
+				<adapter-deployer deployable="${worklightBuildOutputFolder}/${buildResultUUID}/@{adapter}.adapter"
+					worklightServerHost="${worklightServer}" />
+			</sequential>
+		</for>
+	</target>
+	
+	<!-- Target: buildWAR -->
+	<target name="buildWAR" depends="init">
+		<startBuildActivity repositoryAddress="${repositoryAddress}"
+			userId="${jazz_username}" password="${jazz_password}"
+			activityIdProperty="buildWAR" label="Building the Worklight WAR"
+			autoComplete="true" verbose="true" buildResultUUID="${buildResultUUID}" />
+		<echo message="Building worklight WAR for project ${worklightProjectName}" />
+		<javac srcdir="${worklightDir}/../../server/java" destdir="${worklightBuildOutputFolder}/classes"
+			classpathref="server-classpath" verbose="true" />
+		<war-builder projectfolder="${basedir}/../../../${worklightProjectName}"
+			destinationfolder="${worklightBuildOutputFolder}/wartemp"
+			warfile="${worklightBuildOutputFolder}/${buildResultUUID}/${worklightProjectName}.war"
+			classesfolder="${worklightBuildOutputFolder}/classes">
+		</war-builder>
+		
+		<artifactFilePublisher repositoryAddress="${repositoryAddress}"
+		                       userId="${jazz_username}"
+		                       password="${jazz_password}"
+		                       buildResultUUID="${buildResultUUID}"
+		                       filePath="${worklightBuildOutputFolder}/${buildResultUUID}/${worklightProjectName}.war"
+		                       label="${worklightProjectName}.war" />
+	</target>
+
+
+</project>

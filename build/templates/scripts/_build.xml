@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+
+<project name="build" default="daily" basedir=".">
+
+	<target name="init">
+		
+		<property name="ios_env" value="iphone" />
+		<property name="ios_env_uppercase" value="Iphone" />
+
+		<property name="worklightProjectName" value="<%= wlProject %>" />
+		<property name="worklightAppName" value="<%= wlApp %>" />
+		<property name="worklightAppVersion" value="1.0" />
+		<property name="worklightEnvironments" value="<%= appPackages %>" />
+		<property name="worklightAdapters"
+			value="" />
+		<property name="buildEnvironment" value="prod" />
+		<property name="worklightServer" value="http://localhost:10080/<%= wlProject %>" />
+		<property name="ios_projectName"
+			value="${worklightProjectName}${worklightAppName}${ios_env_uppercase}" />
+		
+		<property name="worklightDir"
+			value="${basedir}/../../../${worklightProjectName}/apps/${worklightAppName}" />
+		<property name="worklightBuildOutputFolder" value="${basedir}/../output/worklight" />
+		<property name="www" value="${worklightDir}/../../www" />
+		<property name="dojo_src" value="${basedir}/../../../<%= dojoLibProject %>/toolkit/dojo" />
+		<property name="dojo_release" value="${basedir}/../output/dojo/release" />
+		<property name="dojo_delete_release_folder" value="false"/>
+		<property name="dojo_copy_built_app_packages" value="false"/>
+		<property name="copyFiles" value="dojo/dojo.js" />
+			
+		<taskdef resource="net/sf/antcontrib/antlib.xml">
+			<classpath>
+				<pathelement location="${basedir}/../lib/ant-contrib-1.0b3.jar" />
+			</classpath>
+		</taskdef>
+
+		<taskdef resource="com/worklight/ant/defaults.properties">
+			<classpath>
+				<pathelement location="${basedir}/../lib/worklight-ant.jar" />
+			</classpath>
+		</taskdef>
+
+		<path id="server-classpath">
+			<fileset dir="${worklightDir}/../../server/lib">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+
+	</target>
+
+	<!-- =========================================================================== -->
+	<!-- Targets: all -->
+	<!-- =========================================================================== -->
+	<target name="daily"
+		depends="buildwlapp,deploywlapp,buildAdapters,deployAdapters" />
+
+	<!-- Build dojo custom build -->
+	<target name="dojoBuild" depends="init">
+		<exec dir="${dojo_src}/util/buildscripts" executable="bash" osfamily="unix">
+			<arg line='build.sh --profile ${basedir}/mobile.profile.js --appConfigFile ${worklightDir}/common/commonapp/config.json' />
+		</exec>
+		
+		<copy todir="${www}/layers">
+			<fileset dir="${dojo_release}/layers">
+				<exclude name="**/*.uncompressed.js" />
+			</fileset>
+		</copy>
+		<for list="${copyFiles}" param="file" trim="true">
+			<sequential>
+				<copy file="${dojo_release}/@{file}" toFile="${www}/@{file}" />
+			</sequential>
+		</for>
+		<copy todir="${www}/dojo/cldr">
+			<fileset dir="${dojo_release}/dojo/cldr">
+				<exclude name="**/*.uncompressed.js" />
+				<include name="nls/en/**" />
+				<include name="*.js" />
+			</fileset>
+		</copy>
+
+		<if>
+		<equals arg1="${dojo_copy_built_app_packages}" arg2="true" />
+		<then>
+		<for list="${worklightEnvironments}" param="env" trim="true">
+			<sequential>
+				<delete includeemptydirs="true" failonerror="true">
+					<fileset dir="${worklightDir}/@{env}/@{env}app" includes="**/*"
+						excludes="**/.jazzignore" />
+				</delete>
+				<echo message="Copying built files for environment: @{env}" />
+				<copy todir="${worklightDir}/@{env}/@{env}app">
+					<fileset dir="${dojo_release}/@{env}app">
+						<exclude name="**/*.uncompressed.js" />
+						<exclude name="**/css/**" />
+						<exclude name="**/*.css" />
+					</fileset>
+				</copy>
+				<copy file="${dojo_release}/@{env}app/@{env}app.css"
+					toFile="${worklightDir}/@{env}/@{env}app/@{env}app.css" />
+			</sequential>
+		</for>
+		</then>
+		</if>
+
+		<if>
+			<equals arg1="${dojo_delete_release_folder}" arg2="true" />
+			<then>
+				<delete dir="${dojo_release}" />
+			</then>
+		</if>
+		
+	</target>
+
+	<!-- =========================================================================== -->
+	<!-- Targets: copyFiles -->
+	<!-- =========================================================================== -->
+	<target name="copyFiles" depends="dojoBuild">
+		<if>
+		<equals arg1="${dojo_copy_built_app_packages}" arg2="true" />
+		<then>
+			<echo message="Performing environment specific file modifications" />
+			<delete file="${worklightDir}/common/${worklightAppName}.html" />
+			<move file="${worklightDir}/common/${worklightAppName}_prod.html"
+			tofile="${worklightDir}/common/${worklightAppName}.html" />
+
+			<delete file="${worklightDir}/application-descriptor.xml" />
+			<move file="${worklightDir}/application-descriptor_${buildEnvironment}.xml"
+			tofile="${worklightDir}/application-descriptor.xml" />
+
+			<delete file="${worklightDir}/../../server/conf/worklight.properties" />
+			<move
+			file="${worklightDir}/../../server/conf/worklight_${buildEnvironment}.properties"
+			tofile="${worklightDir}/../../server/conf/worklight.properties" />
+
+			<echo message="Finished copying standard resources" />
+		</then>
+		</if>
+	</target>
+
+	<!-- =========================================================================== -->
+	<!-- Targets: buildwlapp -->
+	<!-- =========================================================================== -->
+	<target name="buildwlapp" depends="copyFiles">
+		<echo
+			message="Packaging workligt app ${worklightAppName} with app-builder ant task" />
+		<for list="${worklightEnvironments}" param="env" trim="true">
+			<sequential>
+				<app-builder environments="@{env}" nativeProjectPrefix="${worklightProjectName}"
+					applicationFolder="${worklightDir}" outputFolder="${worklightBuildOutputFolder}"
+					worklightServerHost="${worklightServer}" skinBuildExtensions="build-dojo.xml">
+				</app-builder>
+			</sequential>
+		</for>
+	</target>
+
+	<!-- =========================================================================== -->
+	<!-- Targets: deploywlapp -->
+	<!-- =========================================================================== -->
+	<target name="deploywlapp" depends="init">
+		<echo
+			message="Deploying ${worklightProjectName}:${worklightAppName} to worklight server ${worklightServer} using app-deployer ant task" />
+		<for list="${worklightEnvironments}" param="env" trim="true">
+			<sequential>
+				<if>
+					<equals arg1="@{env}" arg2="common" />
+					<then>
+						<app-deployer
+							deployable="${worklightBuildOutputFolder}/${worklightAppName}-@{env}.wlapp"
+							worklightServerHost="${worklightServer}">
+						</app-deployer>
+					</then>
+					<else>
+						<app-deployer
+							deployable="${worklightBuildOutputFolder}/${worklightAppName}-@{env}-${worklightAppVersion}.wlapp"
+							worklightServerHost="${worklightServer}">
+						</app-deployer>
+					</else>
+				</if>
+			</sequential>
+		</for>
+	</target>
+
+	<!-- Target: buildAdapter -->
+	<target name="buildAdapters" depends="init">
+		<echo message="Build worklight adapter for project ${worklightProjectName}" />
+		<for list="${worklightAdapters}" param="adapter" trim="true">
+			<sequential>
+				<adapter-builder folder="${worklightDir}/../../adapters/@{adapter}"
+					destinationFolder="${worklightBuildOutputFolder}">
+				</adapter-builder>
+			</sequential>
+		</for>
+	</target>
+
+	<!-- Target: deployAdapter -->
+	<target name="deployAdapters" depends="init">
+		<echo message="Deploy worklight adapter for project ${worklightProjectName}" />
+		<for list="${worklightAdapters}" param="adapter" trim="true">
+			<sequential>
+				<adapter-deployer deployable="${worklightBuildOutputFolder}/@{adapter}.adapter"
+					worklightServerHost="${worklightServer}" />
+			</sequential>
+		</for>
+	</target>
+	
+	<!-- Target: buildWAR -->
+	<target name="buildWAR" depends="init">
+		<echo message="Building worklight WAR for project ${worklightProjectName}" />
+		<javac srcdir="${worklightDir}/../../server/java" destdir="${worklightBuildOutputFolder}/classes"
+			classpathref="server-classpath" verbose="true" />
+		<war-builder projectfolder="${basedir}/../../${worklightProjectName}"
+			destinationfolder="${worklightBuildOutputFolder}/wartemp"
+			warfile="${worklightBuildOutputFolder}/${worklightProjectName}.war"
+			classesfolder="${worklightBuildOutputFolder}/classes">
+		</war-builder>
+	</target>
+
+
+</project>
