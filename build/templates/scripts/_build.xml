@@ -77,6 +77,8 @@
 				<include name="*.js" />
 			</fileset>
 		</copy>
+		<copy file="${dojo_release}/dojo/nls/dojo_en.js" toFile="${www}/dojo/nls/dojo_en.js" />
+		<copy file="${dojo_release}/dojo/nls/dojo_ROOT.js" toFile="${www}/dojo/nls/dojo_ROOT.js" />
 
 		<if>
 		<equals arg1="${dojo_copy_built_app_packages}" arg2="true" />
