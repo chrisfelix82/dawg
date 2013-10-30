@@ -6,7 +6,9 @@
 */
 
 function wlCommonInit(){
-	require(["layers/mobile-ui-layer"],dojoInit);
+	require(["commonapp/app","dojo/domReady!"],function(app){
+		app.init();
+	});
 	
 	/*
 	 * Application is started in offline mode as defined by a connectOnStartup property in initOptions.js file.
@@ -27,10 +29,4 @@ function wlCommonInit(){
 	 *     
 	 */
 
-}
-
-function dojoInit(){
-	require(["commonapp/app","dojo/domReady!"],function(app){
-		app.init();
-	});
 }
