@@ -39,8 +39,8 @@ define([
 				
 				var F = MODULE + ":beforeActivate:";
 		 		console.debug(F,"Enter");
-		 		//Set the header on the parent template
-		 		this.view.parent.setHeadingLabel(this.view.nls.title);
+		 		//Set the header on the parent template.  This method is defined in BaseViewController.
+		 		this.setHeadingLabel(this.view.nls.title);
 		 		//Optionally show the back button
 		 		//this.view.parent.showBack(true);
 		 		//TODO: See other common methods available on commonapp/BaseViewController 
