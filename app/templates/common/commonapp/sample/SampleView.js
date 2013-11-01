@@ -41,8 +41,6 @@ define([
 		 		console.debug(F,"Enter");
 		 		//Set the header on the parent template.  This method is defined in BaseViewController.
 		 		this.setHeadingLabel(this.view.nls.title);
-		 		//Optionally show the back button
-		 		//this.view.parent.showBack(true);
 		 		//TODO: See other common methods available on commonapp/BaseViewController 
 		 		console.debug(F,"Exit");
 			},
