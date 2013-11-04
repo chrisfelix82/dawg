@@ -65,6 +65,7 @@
 				<copy file="${dojo_release}/@{file}" toFile="${www}/@{file}" />
 			</sequential>
 		</for>
+		
 		<copy todir="${www}/dojo/cldr">
 			<fileset dir="${dojo_release}/dojo/cldr">
 				<exclude name="**/*.uncompressed.js" />
