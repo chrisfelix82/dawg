@@ -101,10 +101,12 @@ BuildGenerator.prototype.moreCopy = function(){
 		this.buildXML = this.buildXML.replace(/<%= wlApp %>/g,this.wlApp);
 		this.buildXML = this.buildXML.replace(/<%= appPackages %>/g,this.appPackages);
 		this.buildXML = this.buildXML.replace(/<%= dojoLibProject %>/g,this.dojoLibProject);
+		this.buildXML = this.buildXML.replace(/<%= supportedLocales %>/g,this.supportedLocales);
 		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= wlProject %>/g,this.wlProject);
 		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= wlApp %>/g,this.wlApp);
 		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= appPackages %>/g,this.appPackages);
 		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= dojoLibProject %>/g,this.dojoLibProject);
+		this.buildXMLRTC = this.buildXMLRTC.replace(/<%= supportedLocales %>/g,this.supportedLocales);
 		this.write(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build.xml",this.buildXML);
 		this.write(this.options.env.cwd + "/../" + this.buildProject + "/build/scripts/build_RTC.xml",this.buildXMLRTC);
 		cb();

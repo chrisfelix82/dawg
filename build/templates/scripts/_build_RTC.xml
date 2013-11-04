@@ -75,11 +75,6 @@
 			<arg line='build.sh --profile ${basedir}/mobile.profile.js --appConfigFile ${worklightDir}/common/commonapp/config.json' />
 		</exec>
 		
-		<copy todir="${www}/layers">
-			<fileset dir="${dojo_release}/layers">
-				<exclude name="**/*.uncompressed.js" />
-			</fileset>
-		</copy>
 		<for list="${copyFiles}" param="file" trim="true">
 			<sequential>
 				<copy file="${dojo_release}/@{file}" toFile="${www}/@{file}" />
@@ -88,11 +83,21 @@
 		<copy todir="${www}/dojo/cldr">
 			<fileset dir="${dojo_release}/dojo/cldr">
 				<exclude name="**/*.uncompressed.js" />
-				<include name="nls/en/**" />
 				<include name="*.js" />
 			</fileset>
 		</copy>
-		<copy file="${dojo_release}/dojo/nls/dojo_en.js" toFile="${www}/dojo/nls/dojo_en.js" />
+		
+		<for list="<%= supportedLocales %>" param="lang" trim="true">
+			<sequential>
+				<copy file="${dojo_release}/dojo/nls/dojo_@{lang}.js" toFile="${www}/dojo/nls/dojo_@{lang}.js" />
+				<copy todir="${www}/dojo/cldr">
+					<fileset dir="${dojo_release}/dojo/cldr">
+					<exclude name="**/*.uncompressed.js" />
+					<include name="nls/@{lang}/**" />
+			</fileset>
+		</copy>
+			</sequential>
+		</for>
 		<copy file="${dojo_release}/dojo/nls/dojo_ROOT.js" toFile="${www}/dojo/nls/dojo_ROOT.js" />
 
 		<if>
