@@ -113,7 +113,7 @@ ViewGenerator.prototype.files = function files() {
 		this.configJson.views[fileName] = new Object();
 		this.configJson.views[fileName].template = this.packageName + "/" + fileName + ".html";
 		this.configJson.views[fileName].controller = this.packageName + "/" + fileName + ".js";
-		this.configJson.views[fileName].nls = this.packageName + "/nls/" + fileName + ".js";
+		this.configJson.views[fileName].nls = this.packageName + "/nls/" + fileName;
 	}else{
 		var parent = this.configJson;
 		var path = this.parentView.split(".");
