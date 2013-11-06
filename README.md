@@ -55,6 +55,17 @@ To create a new dojox/app based view/template.  NOTE: replace main with the Work
 $ yo dawg:view main
 ```
 
+### Video Tutorials
+
+yo dawg - dojox/app with IBM Worklight generator (Part 1 of 3)
+http://www.youtube.com/watch?v=x9I9dKC2BGU
+
+yo dawg - dojox/app with IBM Worklight generator (Part 2 of 3)
+http://www.youtube.com/watch?v=hRXmcnukIz8
+
+yo dawg - dojox/app with IBM Worklight generator (Part 3 of 3)
+http://www.youtube.com/watch?v=-qmB69gefIc
+
 ### Getting To Know Yeoman
 
 Yeoman has a heart of gold. He's a person with feelings and opinions, but he's very easy to work with. If you think he's too opinionated, he can be easily convinced.
