@@ -5,7 +5,6 @@
 	"dependencies": [
 		"commonapp/app",
 		"commonapp/BaseViewController",
-		"commonapp/LocalStorage",
 		"dojo/store/Memory",
 		"dojox/app/utils/mvcModel",
 		"dojox/mvc/EditStoreRefListController",
