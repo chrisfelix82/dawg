@@ -23,7 +23,7 @@ $ npm install -g yo
 
 Yeoman travels light. He didn't pack any generators when he moved in. You can think of a generator like a plug-in. You get to choose what type of application you wish to create, such as a Backbone application or even a Chrome extension.
 
-NOTE: For IBM Worklight 6.1 +, consider using https://npmjs.org/package/generator-chris instead of "yo dawg".  The workflow has ben simplified and a new option to generate JQuery Mobile + Angular apps has been added.  Why the name change from "yo dawg" to "yo chris"?  Well simply I discovered too late that generator-dawg has already ben taken on npm.
+NOTE: For IBM Worklight 6.1 +, consider using https://npmjs.org/package/generator-chris instead of "yo dawg".  The workflow has ben simplified and a new option to generate JQuery Mobile + Angular apps has been added.  Why the name change from "yo dawg" to "yo chris"?  Well simply I discovered too late that generator-dawg has already been taken on npm.
 
 To install generator-dawg from npm, run (currently not published to npm. Install from repo instead):
 
