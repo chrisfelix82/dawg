@@ -2,6 +2,7 @@
 
 A generator for [Yeoman](http://yeoman.io).
 
+#Note that this generator was useful for pre Worklight 6.1.  Please start using https://npmjs.org/package/generator-chris for Worklight 6.1 +.
 
 ## Getting Started
 
